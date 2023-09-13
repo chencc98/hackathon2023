@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Chat Room</title>
+    <script src="/js/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+    <table style="height: 100%; width: 100%;">
+    <tr>
+        <td style="width: 100px;">
+            Your Email: <input type="email" id="myemail" th:value="${userEmail}"/><br/>
+            <br/>
+            Your Status: <span id="userStatus" th:text="${userStatus}"></span><br/>
+            <br/>
+            <input type="button" value="Start Session" id="start" onclick="javascript: startsession();"/>
+            <input type="button" value="End Session" id="stop" onclick="javascript: stopsession();"/>
+        </td>
+        <td>
+            <div id="chatarea" style="height: 100%; width: 100%;"></div>
+
+        </td>
+    </tr>
+    <tr style="height: 50px;"><td>&nbsp;</td>
+        <td >
+            
+            <textarea style="height: 100%; width: 100%;" id = "inputtext" ></textarea>
+            <br/>
+            <input type="button" value="Send" onclick="javascript:sendtext();"/>
+        </td>
+    </tr>
+    </table>
+</body>
+<script>
+function startsession() {
+    var email = $("#myemail").val();
+    if (email) {
+        $.ajax({
+            url: "/chat/start?userEmail=" + email,
+            success: function(data) {
+                alert("login ok");
+                $("#userStatus").text("Login");
+            },
+            error: function() {
+                alert("login failed");
+            }
+        });
+    } else {
+        alert("input your email");
+    }
+}
+
+function stopsession() {
+    $.ajax({
+            url: "/chat/stop",
+            success: function(data) {
+                alert("logout ok");
+                $("#userStatus").text("NotLogin");
+            },
+            error: function() {
+                alert("logout failed");
+            }
+        });
+}
+
+function sendtext() {
+    var login = $("#userStatus").text();
+    if (login == "Login") {
+        var msg = $("#inputtext").val();
+        if (msg) {
+            var dom = "<div>Me: " + msg + "</div>";
+            $("#chatarea").append(dom);
+            $("#inputtext").val("");
+        } else {
+            alert("no message to send");
+        }
+    } else {
+        alert("login and start the session first");
+    }
+}
+
+</script>
+</html>
